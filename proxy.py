@@ -12,14 +12,12 @@ HEADERS = {
     "Accept": "application/json, text/plain, */*",
 }
 
-# URLs actualizadas de BYMA Open Data
 ENDPOINTS = {
-    "acciones": "https://open.bymadata.com.ar/assets/json/leading-equity.json",
-    "cedears":  "https://open.bymadata.com.ar/assets/json/cedears.json",
-    "bonos":    "https://open.bymadata.com.ar/assets/json/government-bonds.json",
+    "acciones": "https://open.bymadata.com.ar/vanoms-be-core/rest/api/bymadata/free/leading-equity",
+    "cedears":  "https://open.bymadata.com.ar/vanoms-be-core/rest/api/bymadata/free/cedears",
+    "bonos":    "https://open.bymadata.com.ar/vanoms-be-core/rest/api/bymadata/free/government-bonds",
 }
 
-# También permitimos proxy genérico para cualquier URL de BYMA
 ALLOWED = ["open.bymadata.com.ar"]
 
 @app.route("/market/<market>")
@@ -49,7 +47,7 @@ def proxy():
 
 @app.route("/health")
 def health():
-    return jsonify({"status": "ok", "endpoints": list(ENDPOINTS.keys())})
+    return jsonify({"status": "ok"})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
