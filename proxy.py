@@ -10,6 +10,7 @@ HEADERS = {
     "Referer": "https://open.bymadata.com.ar/",
     "Origin": "https://open.bymadata.com.ar",
     "Accept": "application/json, text/plain, */*",
+    "Content-Type": "application/json",
 }
 
 ENDPOINTS = {
@@ -25,21 +26,7 @@ def get_market(market):
     if market not in ENDPOINTS:
         return jsonify({"error": f"Mercado desconocido: {market}"}), 400
     try:
-        r = requests.get(ENDPOINTS[market], headers=HEADERS, timeout=10, verify=False)
-        r.raise_for_status()
-        return (r.content, r.status_code, {"Content-Type": "application/json"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 502
-
-@app.route("/proxy")
-def proxy():
-    url = request.args.get("url", "")
-    if not url:
-        return jsonify({"error": "Falta parametro url"}), 400
-    if not any(domain in url for domain in ALLOWED):
-        return jsonify({"error": "Dominio no permitido"}), 403
-    try:
-        r = requests.get(url, headers=HEADERS, timeout=10, verify=False)
+        r = requests.post(ENDPOINTS[market], headers=HEADERS, json={}, timeout=10, verify=False)
         r.raise_for_status()
         return (r.content, r.status_code, {"Content-Type": "application/json"})
     except Exception as e:
