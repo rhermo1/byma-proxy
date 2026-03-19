@@ -6,12 +6,32 @@ app = Flask(__name__)
 CORS(app)
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     "Referer": "https://open.bymadata.com.ar/",
     "Origin": "https://open.bymadata.com.ar",
+    "Accept": "application/json, text/plain, */*",
 }
 
+# URLs actualizadas de BYMA Open Data
+ENDPOINTS = {
+    "acciones": "https://open.bymadata.com.ar/assets/json/leading-equity.json",
+    "cedears":  "https://open.bymadata.com.ar/assets/json/cedears.json",
+    "bonos":    "https://open.bymadata.com.ar/assets/json/government-bonds.json",
+}
+
+# También permitimos proxy genérico para cualquier URL de BYMA
 ALLOWED = ["open.bymadata.com.ar"]
+
+@app.route("/market/<market>")
+def get_market(market):
+    if market not in ENDPOINTS:
+        return jsonify({"error": f"Mercado desconocido: {market}"}), 400
+    try:
+        r = requests.get(ENDPOINTS[market], headers=HEADERS, timeout=10, verify=False)
+        r.raise_for_status()
+        return (r.content, r.status_code, {"Content-Type": "application/json"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 502
 
 @app.route("/proxy")
 def proxy():
@@ -29,7 +49,7 @@ def proxy():
 
 @app.route("/health")
 def health():
-    return jsonify({"status": "ok"})
+    return jsonify({"status": "ok", "endpoints": list(ENDPOINTS.keys())})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
