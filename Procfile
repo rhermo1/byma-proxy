@@ -1,1 +1,1 @@
-web: gunicorn proxy:app --bind 0.0.0.0:$PORT
+web: gunicorn proxy:app --bind 0.0.0.0:${PORT:-8080}
